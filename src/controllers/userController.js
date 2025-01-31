@@ -1,12 +1,10 @@
 const jwt = require("jsonwebtoken");
 const users = require("../data/users");
 
-// Функція для створення уніфікованої відповіді
 const createResponse = (code, message, result = null, errors = null) => ({
   data: { code, message, result, errors },
 });
 
-// 📝 Реєстрація користувача
 exports.registerUser = (req, res) => {
   try {
     const { name, email, password, role } = req.body;
@@ -46,7 +44,6 @@ exports.registerUser = (req, res) => {
   }
 };
 
-// 🔐 Логін користувача
 exports.loginUser = (req, res) => {
   try {
     const { email, password } = req.body;
@@ -62,11 +59,9 @@ exports.loginUser = (req, res) => {
       );
     }
 
-    const token = jwt.sign(
-      { id: user.id, role: user.role },
-      "your_jwt_secret",
-      { expiresIn: "1h" }
-    );
+    const token = jwt.sign({ id: user.id, role: user.role }, "jwt_secret", {
+      expiresIn: "1h",
+    });
 
     res.json(createResponse(200, "Login successful", { token }));
   } catch (error) {
@@ -78,7 +73,6 @@ exports.loginUser = (req, res) => {
   }
 };
 
-// 📜 Отримати всіх користувачів
 exports.getUsers = (req, res) => {
   try {
     const sanitizedUsers = users.map(({ password, ...user }) => user);
@@ -92,7 +86,6 @@ exports.getUsers = (req, res) => {
   }
 };
 
-// 🔍 Отримати користувача за ID
 exports.getUserById = (req, res) => {
   try {
     const user = users.find((user) => user.id === parseInt(req.params.id));
@@ -114,7 +107,6 @@ exports.getUserById = (req, res) => {
   }
 };
 
-// 📝 Оновити користувача
 exports.updateUser = (req, res) => {
   try {
     const user = users.find((user) => user.id === parseInt(req.params.id));
@@ -136,7 +128,6 @@ exports.updateUser = (req, res) => {
   }
 };
 
-// ❌ Видалити користувача
 exports.deleteUser = (req, res) => {
   try {
     const index = users.findIndex(
@@ -160,7 +151,6 @@ exports.deleteUser = (req, res) => {
   }
 };
 
-// ⚡ Додамо редірект (HTTP 300)
 exports.redirectToUsers = (req, res) => {
   res.status(300).json(
     createResponse(300, "Multiple choices", null, {
